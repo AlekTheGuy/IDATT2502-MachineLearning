@@ -2,22 +2,31 @@ import torch
 import matplotlib.pyplot as plt
 import csv
 
+x_array, y_array = [None] * 1001, [None] * 1001
+
 with open('length_weight.csv', mode="r") as csv_file:
     reader = csv.reader(csv_file)
 
+    i = 0
+
     for item in reader:
-        print(item[0])
+        x_array[i] = item[0]
+        y_array[i] = item[1]
+        i += 1
 
 # Observed/training input and output
-x_train = torch.tensor([1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0]).reshape(-1, 1)  # x_train = [[1], [1.5], [2], [3], [4], [5], [6]]
-y_train = torch.tensor([5.0, 3.5, 3.0, 4.0, 3.0, 1.5, 2.0]).reshape(-1, 1)  # y_train = [[5], [3.5], [3], [4], [3], [1.5], [2]]
+# x_train = [[1], [1.5], [2], [3], [4], [5], [6]]
+x_train = torch.tensor(x_array).reshape(-1, 1)
+# y_train = [[5], [3.5], [3], [4], [3], [1.5], [2]]
+y_train = torch.tensor(y_array).reshape(-1, 1)
 
 
 class LinearRegressionModel:
 
     def __init__(self):
         # Model variables
-        self.W = torch.tensor([[0.0]], requires_grad=True)  # requires_grad enables calculation of gradients
+        # requires_grad enables calculation of gradients
+        self.W = torch.tensor([[0.0]], requires_grad=True)
         self.b = torch.tensor([[0.0]], requires_grad=True)
 
     # Predictor
@@ -26,7 +35,8 @@ class LinearRegressionModel:
 
     # Uses Mean Squared Error
     def loss(self, x, y):
-        return torch.mean(torch.square(self.f(x) - y))  # Can also use torch.nn.functional.mse_loss(self.f(x), y) to possibly increase numberical stability
+        # Can also use torch.nn.functional.mse_loss(self.f(x), y) to possibly increase numberical stability
+        return torch.mean(torch.square(self.f(x) - y))
 
 
 model = LinearRegressionModel()
@@ -43,13 +53,15 @@ for epoch in range(1000):
     optimizer.zero_grad()  # Clear gradients for next step
 
 # Print model variables and loss
-print("W = %s, b = %s, loss = %s" % (model.W, model.b, model.loss(x_train, y_train)))
+print("W = %s, b = %s, loss = %s" %
+      (model.W, model.b, model.loss(x_train, y_train)))
 
 # Visualize result
 plt.plot(x_train, y_train, 'o', label='$(x^{(i)},y^{(i)})$')
 plt.xlabel('x')
 plt.ylabel('y')
-x = torch.tensor([[torch.min(x_train)], [torch.max(x_train)]])  # x = [[1], [6]]]
+# x = [[1], [6]]]
+x = torch.tensor([[torch.min(x_train)], [torch.max(x_train)]])
 plt.plot(x, model.f(x).detach(), label='$\\hat y = f(x) = xW+b$')
 plt.legend()
 plt.show()
