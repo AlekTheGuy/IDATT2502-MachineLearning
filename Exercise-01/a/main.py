@@ -1,24 +1,11 @@
 import torch
 import matplotlib.pyplot as plt
-import csv
+import pandas as panda
 
-x_array, y_array = [None] * 1001, [None] * 1001
-
-with open('length_weight.csv', mode="r") as csv_file:
-    reader = csv.reader(csv_file)
-
-    i = 0
-
-    for item in reader:
-        x_array[i] = item[0]
-        y_array[i] = item[1]
-        i += 1
-
-# Observed/training input and output
-# x_train = [[1], [1.5], [2], [3], [4], [5], [6]]
-x_train = torch.tensor(x_array).reshape(-1, 1)
-# y_train = [[5], [3.5], [3], [4], [3], [1.5], [2]]
-y_train = torch.tensor(y_array).reshape(-1, 1)
+data = panda.read_csv("length_weight.csv")
+x_train = data.pop("length")
+x_train = torch.tensor(x_train.to_numpy(), dtype=torch.double).reshape(-1, 1)
+y_train = torch.tensor(data.to_numpy(), dtype=torch.double).reshape(-1, 1)
 
 
 class LinearRegressionModel:
@@ -26,8 +13,8 @@ class LinearRegressionModel:
     def __init__(self):
         # Model variables
         # requires_grad enables calculation of gradients
-        self.W = torch.tensor([[0.0]], requires_grad=True)
-        self.b = torch.tensor([[0.0]], requires_grad=True)
+        self.W = torch.tensor([[0.0]], dtype=torch.double, requires_grad=True)
+        self.b = torch.tensor([[0.0]], dtype=torch.double, requires_grad=True)
 
     # Predictor
     def f(self, x):
@@ -43,7 +30,7 @@ model = LinearRegressionModel()
 
 # Optimize: adjust W and b to minimize loss using stochastic gradient descent
 optimizer = torch.optim.SGD([model.W, model.b], 0.01)
-for epoch in range(1000):
+for epoch in range(300000):
     model.loss(x_train, y_train).backward()  # Compute loss gradients
     optimizer.step()  # Perform optimization by adjusting W and b,
     # similar to:
