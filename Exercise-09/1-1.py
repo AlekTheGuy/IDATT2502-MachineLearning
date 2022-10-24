@@ -163,9 +163,9 @@ def task_1_2():
     time = []
 
     for i in range(8, 18):
-        size = 2**i
-        base = 20
-        max = i
+        size = 20
+        max = 2**i
+        base = i
         generations = []
         start_gen = np.random.randint(0, max, size=size)
         generations.append(start_gen)
@@ -179,4 +179,5 @@ def task_1_2():
     plt.show()
 
 
+# task_1_1()
 task_1_2()
