@@ -15,22 +15,20 @@ class Gen:
         self.avg_fitness = avg
 
 
-size = 10
-base = 8
-max_value = 256
+array_size: int
+base_value: int
+max_value: int
 generations = []
-start_gen = np.random.randint(0, max_value, size=size)
-generations.append(start_gen)
-target = np.random.randint(0, max_value)
+target: int
 
 
 def mutation(x: int):
-    start = np.random.randint(0, math.floor(base/2))
-    end = np.random.randint(start, math.floor(base))
+    start = np.random.randint(0, math.floor(base_value/2))
+    end = np.random.randint(start, math.floor(base_value))
     x_str = str(bin(x))[2:]
 
-    if len(x_str) != base:
-        for i in range(base-len(x_str)):
+    if len(x_str) != base_value:
+        for i in range(base_value-len(x_str)):
             x_str = '0' + x_str
 
     x_str = list(x_str)
@@ -86,7 +84,7 @@ def get_new_combination(gen: zip):
 def get_new_gen(old_gen):
     new_gen = get_new_combination(old_gen)
 
-    for i in np.random.randint(0, size, size=math.floor(size/2)):
+    for i in np.random.randint(0, array_size, size=math.floor(array_size/2)):
         new_gen[i] = mutation(new_gen[i])
 
     return new_gen
@@ -101,7 +99,7 @@ def train():
         fs.append(fitnesses)
         # Pick 5 best numbers
         gen = sorted(zip(fitnesses, generations[i]), reverse=True)[
-            :(math.floor(size/2))]
+            :(math.floor(array_size/2))]
         if max(fitnesses) == 0:
             print(generations)
             return [Gen(max(f), sum(f)/len(f)) for f in fs], generations
@@ -126,7 +124,7 @@ def train_time():
             fitnesses = [fitness(x) for x in generations[i]]
             # Pick 5 best numbers
             gen = sorted(zip(fitnesses, generations[i]), reverse=True)[
-                :(math.floor(size/2))]
+                :(math.floor(array_size/2))]
             if max(fitnesses) == 0:
                 et = time.time()
                 sts.append(et-st)
@@ -148,7 +146,19 @@ def print_gens(gen, best, avg, i):
     print("")
 
 
+def new_evo(new_max_value, new_size, new_base, target):
+    array_size = new_size
+    base_value = new_base
+    max_value = new_max_value
+    start_gen = np.random.randint(0, max_value, size=array_size)
+    generations.append(start_gen)
+    target = np.random.randint(0, max_value)
+    print(f"pleaaaase {target}")
+
+
 def task_1_1():
+
+    new_evo(256, 10, 8, target)
 
     gen, gens = train()
 
@@ -163,21 +173,15 @@ def task_1_2():
     time = []
 
     for i in range(8, 18):
-        size = 20
-        max = 2**i
-        base = i
-        generations = []
-        start_gen = np.random.randint(0, max, size=size)
-        generations.append(start_gen)
-        target = np.random.randint(0, max)
+        new_evo(2**i, 20, i)
         time.append(train_time())
         print(f"Done with: {2**i}")
         print(f"Target: {target}")
     plt.xlabel("Bit length")
     plt.ylabel("Time (s)")
-    plt.plot(n, time)
+    plt.plot(n, time, target)
     plt.show()
 
 
-# task_1_1()
-task_1_2()
+task_1_1()
+# task_1_2()

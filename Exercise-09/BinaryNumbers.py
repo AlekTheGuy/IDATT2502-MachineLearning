@@ -25,7 +25,10 @@ class Evolution():
         self.generations.append(self.start_gen)
         self.target = np.random.randint(0, max)
 
-    def mutation(self, x: int):
+    def fitness(self, x: int):
+        return -np.abs(x - self.target)
+
+    def mutate(self, x: int):
         start = np.random.randint(0, math.floor(self.base/2))
         end = np.random.randint(start, math.floor(self.base))
         x_str = str(bin(x))[2:]
@@ -57,9 +60,6 @@ class Evolution():
         child = x_str[:n]+y_str[n:]
         return int(child, 2)
 
-    def fitness(self, x: int):
-        return -np.abs(x - self.target)
-
     def get_new_combination(self, gen: zip):
         new_gen = []
         t = 0
@@ -84,7 +84,7 @@ class Evolution():
         new_gen = self.get_new_combination(old_gen)
 
         for i in np.random.randint(0, self.size, size=math.floor(self.size/2)):
-            new_gen[i] = self.mutation(new_gen[i])
+            new_gen[i] = self.mutate(new_gen[i])
 
         return new_gen
 
@@ -135,11 +135,9 @@ class Evolution():
         return sum(sts)/len(sts)
 
 
-def print_gens(gen, best, avg, i):
-    print(f"Gen {i}: ")
+def print_info(gen, best, avg, i):
+    print(f"Generation {i}, best: {best}, average: {avg}")
     print(gen)
-    print(f"Best Fitness: {best}")
-    print(f"Avg Fitness: {avg}")
     print("")
 
 
@@ -149,7 +147,7 @@ def task_1_1():
     gen, gens = evo.train()
 
     for i in range(len(gens)):
-        print_gens(gens[i], gen[i].best_fitness, gen[i].avg_fitness, i)
+        print_info(gens[i], gen[i].best_fitness, gen[i].avg_fitness, i)
 
     print(f"Target: {evo.target}")
 
